@@ -1,37 +1,36 @@
-var cats = {};
+var sight;
 
 Leap.loop(function(frame) {
-    frame.hands.forEach(function(hand, index) {
-
-        var cat = (cats[index] || (cats[index] = new Cat()));
-        cat.setTransform(hand.screenPosition(), hand.roll());
-
-    });
+    var hands = frame.hands;
+    if (hands.length != 0) {
+        hands[0].fingers.forEach(function(finger, index, arr) {
+            if (finger.type == 1) {
+                sight.setTransform(hands[0].screenPosition(), finger.direction);
+            }
+        });
+    }
 }).use('screenPosition', {
-    scale: 0.25
+    scale: 0.5
 });
 
-var Cat = function() {
-    var cat = this;
+var Sight = function() {
+    var sight = this;
     var img = document.createElement('img');
-    img.src = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/109794/cat_2.png';
+    img.src = 'img/gun_sight.png';
     img.style.position = 'absolute';
+
     img.onload = function() {
-        cat.setTransform([window.innerWidth / 2, window.innerHeight / 2], 0);
+        sight.setTransform([window.innerWidth / 2, window.innerHeight / 2], 0);
         document.body.appendChild(img);
     }
 
-    cat.setTransform = function(position, rotation) {
+    sight.setTransform = function(position, direction) {
+        var newX = position[0] - img.width / 2;
+        var newY = position[1] - img.height / 2;
 
-        img.style.left = position[0] - img.width / 2 + 'px';
-        img.style.top = position[1] - img.height / 2 + 'px';
-
-        img.style.transform = 'rotate(' + -rotation + 'rad)';
-
-        img.style.webkitTransform = img.style.MozTransform = img.style.msTransform =
-            img.style.OTransform = img.style.transform;
-
+        img.style.left = newX + (direction[0] * 1000) + 'px';
+        img.style.top = newY + (-direction[1] * 1000) + 'px';
     };
 };
 
-cats[0] = new Cat();
+sight = new Sight();
