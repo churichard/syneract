@@ -6,7 +6,8 @@ var bullet_hole_x = new Deque();
 var bullet_hole_y = new Deque();
 var bulletTime = Date.now();
 var socket = io();
-var enemyTime = Date.now();
+var enemyX = [];
+var enemyY = [];
 
 Leap.loop(function(frame) {
     var hands = frame.hands;
@@ -85,13 +86,7 @@ Leap.loop(function(frame) {
     }
 
     socket.emit('sight pos', [sight.getX(), sight.getY()]);
-
-    var newTime = Date.now();
-    if (newTime - enemyTime > 5000) {
-        console.log(newTime - enemyTime);
-        enemyTime = newTime;
-        socket.emit('enemies');
-    }
+    socket.emit('enemies');
 }).use('screenPosition', {
     scale: 0.5
 });
@@ -102,11 +97,28 @@ socket.on('sight pos', function(position) {
     }
 });
 
-socket.on('enemies', function(enemyPos) {
-    var enemy = new Enemy();
-    enemy.setX(enemyPos[0]);
-    enemy.setY(enemyPos[1]);
-    enemy.show();
+socket.on('enemies', function(enX, enY) {
+    // Update enemy x and enemy y arrays
+    for (var i = 0; i < enX.length; i++) {
+        if (!enemyX.includes(enX[i]) && !enemyY.includes(enY[i])) {
+            enemyX.push(enX[i]);
+            enemyY.push(enY[i]);
+            var enemy = new Enemy();
+            enemy.setX(enX[i]);
+            enemy.setY(enY[i]);
+            enemy.show();
+            enemies.push(enemy);
+        }
+        if (!enX.includes[enemyX[i]] && !enY.includes[enemyY[i]]) {
+            for (var k = 0; k < enemies.length; k++) {
+                if (enemies[k].getX() === enemyX[j] && enemies[k].getY() === enemyY[j]) {
+                    document.body.removeChild(enemies[k]);
+                }
+            }
+            enemyX.splice(i, 1);
+            enemyY.splice(i, 1);
+        }
+    }
 });
 
 var Sight = function() {

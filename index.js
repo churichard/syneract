@@ -3,6 +3,10 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var enemyTime = Date.now();
+var enemyX = [];
+var enemyY = [];
+
 app.use(express.static(__dirname + '/'));
 app.get('/', function(req, res) {
     res.sendfile('index.html');
@@ -14,9 +18,15 @@ io.on('connection', function(socket) {
     });
 
     socket.on('enemies', function() {
-        // Add enemies
-        var enemy = new Enemy();
-        io.emit('enemies', [enemy.getX(), enemy.getY()]);
+        var newTime = Date.now();
+        if (newTime - enemyTime > 5000) {
+            enemyTime = newTime;
+            // Add enemies
+            var enemy = new Enemy();
+            enemyX.push(enemy.getX());
+            enemyY.push(enemy.getY());
+            io.emit('enemies', [enemyX, enemyY]);
+        }
     });
     // console.log('a user connected');
     // socket.on('disconnect', function(){
