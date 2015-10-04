@@ -1,5 +1,3 @@
-var canvasX = 400;
-var canvasY = 600;
 var sight;
 var enemies = [];
 var vel_hist_deque = new Deque();
