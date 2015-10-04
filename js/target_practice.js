@@ -22,6 +22,7 @@ Leap.loop(function(frame) {
         });
         var max_vel = 0;
         var avg_vel = 0;
+        var abs_avg_vel = 0;
         for (var i = 0; i < vel_hist_deque.length; i++) {
             // Calculate average velocity
             var avg = average(vel_hist_deque.get(i));
@@ -33,11 +34,12 @@ Leap.loop(function(frame) {
                 }
             } else {
                 avg_vel += vel_hist_deque.get(i)[1];
+                abs_avg_vel += Math.abs(vel_hist_deque.get(i)[1]);
             }
         }
         avg_vel /= vel_hist_deque.length / 2;
 
-        if (bullet_hole_x.length >= 5) {
+        if (bullet_hole_x.length >= 20) {
             bullet_hole_x.shift();
             bullet_hole_y.shift();
         }
@@ -45,7 +47,7 @@ Leap.loop(function(frame) {
         bullet_hole_y.push(sight.getY());
 
         var newTime = Date.now();
-        if (newTime - time > 500 && max_vel <= 30 && avg_vel > 100) {
+        if (newTime - time > 1000 && max_vel <= 15 && abs_avg_vel > 5000 && avg_vel > 0) {
             time = newTime;
 
             var img = document.createElement('img');
