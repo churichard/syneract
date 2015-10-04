@@ -1,10 +1,12 @@
 var sight;
+var sight2;
 var enemies = [];
 var vel_hist_deque = new Deque();
 var bullet_hole_x = new Deque();
 var bullet_hole_y = new Deque();
 var bulletTime = Date.now();
 var enemyTime = Date.now();
+var socket = io();
 
 Leap.loop(function(frame) {
     var hands = frame.hands;
@@ -93,6 +95,13 @@ Leap.loop(function(frame) {
         enemyTime = newTime;
         enemies.push(new Enemy());
     }
+
+    socket.emit('sight position', [sight.getX(), sight.getY()]);
+    socket.on('sight position', function(position){
+        if (position[0] != sight.getX() && position[1] != sight.getY()) {
+            sight2.setPosition(position[0], position[1]);
+        }
+    });
 }).use('screenPosition', {
     scale: 0.5
 });
@@ -119,6 +128,13 @@ var Sight = function() {
         img.style.left = x + "px";
         img.style.top = y + "px";
     };
+
+    sight.setPosition = function(newX, newY) {
+        x = newX;
+        y = newY;
+        img.style.left = x + "px";
+        img.style.top = y + "px";
+    }
 
     sight.getX = function() {
         return x;
@@ -185,5 +201,6 @@ function average(arr) {
 }
 
 sight = new Sight();
+sight2 = new Sight();
 document.body.style.backgroundImage = "url('img/background.png')";
 document.body.style.backgroundSize = "100%";
