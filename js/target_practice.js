@@ -62,8 +62,24 @@ Leap.loop(function(frame) {
             }
 
             for (var i = 0; i < enemies.length; i++) {
-                if (bullet_hole_x.get(0) >= enemies[i].getX() && bullet_hole_x.get(0) <= enemies[i].getX() + enemies[i].getWidth() && bullet_hole_y.get(0) >= enemies[i].getY() && bullet_hole_y.get(0) <= enemies[i].getY() + enemies[i].getHeight()) {
+                // console.log("Bullet x: " + bullet_hole_x.get(0));
+                // console.log("Enemy x: " + enemies[i].getX() + " " + (enemies[i].getX() + enemies[i].getWidth()));
+                // console.log("Bullet y: " + bullet_hole_y.get(0));
+                // console.log("Enemy y: " + enemies[i].getY() + " " + (enemies[i].getY() + enemies[i].getHeight()));
+
+                if (bullet_hole_x.get(0) + img.width / 2 >= enemies[i].getX() && bullet_hole_x.get(0) + img.width / 2 <= enemies[i].getX() + enemies[i].getWidth() && bullet_hole_y.get(0) + img.height / 2 >= enemies[i].getY() && bullet_hole_y.get(0) + img.height / 2 <= enemies[i].getY() + enemies[i].getHeight()) {
                     document.body.removeChild(enemies[i].getImg());
+                    var gif = document.createElement('img');
+                    gif.src = 'img/explosion.gif';
+                    gif.style.position = 'absolute';
+                    gif.style.left = enemies[i].getX();
+                    gif.style.top = enemies[i].getY();
+                    gif.onload = function() {
+                        document.body.appendChild(gif);
+                        setTimeout(function() {
+                            document.body.removeChild(gif);
+                        }, 800);
+                    }
                     enemies.splice(i, 1);
                     break;
                 }
@@ -119,7 +135,11 @@ var Enemy = function() {
     var enemy = this;
 
     var img = document.createElement('img');
-    img.src = 'img/zombie.png';
+    if (Math.random() < 0.5) {
+        img.src = 'img/zombie.png';
+    } else {
+        img.src = 'img/zombie2.png';
+    }
     img.style.position = 'absolute';
 
     var x = (window.innerWidth - img.width) * Math.random();
@@ -167,3 +187,5 @@ function average(arr) {
 }
 
 sight = new Sight();
+document.body.style.backgroundImage = "url('img/background.png')";
+document.body.style.backgroundSize = "100%";
