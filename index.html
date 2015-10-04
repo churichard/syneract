@@ -1,10 +1,14 @@
 <html>
 
 <head>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
+	<style>body{font-family: 'Open Sans', sans-serif;}</style>
     <h1 style="color:#E53935;z-index:999;">Syneract</h1>
+    <div style="position:absolute;top:2%;right:2%;color:white;">Points: <span id="points">0</span></div>
+    <div style="position:absolute;top:10%;right:50%;color:white;"><h1 id="score"></h1></div>
     <script src="https://js.leapmotion.com/leap-0.6.4.js"></script>
     <script src="https://js.leapmotion.com/leap-plugins-0.1.11.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
