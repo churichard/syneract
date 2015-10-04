@@ -100,7 +100,7 @@ socket.on('sight pos', function(position) {
 socket.on('enemies', function(enX, enY) {
     // Update enemy x and enemy y arrays
     for (var i = 0; i < enX.length; i++) {
-        if (!enemyX.includes(enX[i]) && !enemyY.includes(enY[i])) {
+        if (enemyX.indexOf(enX[i]) === -1 && enemyY.indexOf(enY[i]) === -1) {
             enemyX.push(enX[i]);
             enemyY.push(enY[i]);
             var enemy = new Enemy();
@@ -109,7 +109,9 @@ socket.on('enemies', function(enX, enY) {
             enemy.show();
             enemies.push(enemy);
         }
-        if (!enX.includes[enemyX[i]] && !enY.includes[enemyY[i]]) {
+    }
+    for (var i = 0; i < enemyX.length; i++) {
+        if (enX.indexOf[enemyX[i]] === -1 && enY.includes[enemyY[i]] === -1) {
             for (var k = 0; k < enemies.length; k++) {
                 if (enemies[k].getX() === enemyX[j] && enemies[k].getY() === enemyY[j]) {
                     document.body.removeChild(enemies[k]);

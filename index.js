@@ -25,7 +25,7 @@ io.on('connection', function(socket) {
             var enemy = new Enemy();
             enemyX.push(enemy.getX());
             enemyY.push(enemy.getY());
-            io.emit('enemies', [enemyX, enemyY]);
+            io.emit('enemies', enemyX, enemyY);
         }
     });
     // console.log('a user connected');
