@@ -1,11 +1,12 @@
 var canvasX = 400;
 var canvasY = 600;
+var sight;
+var enemies = [];
 var vel_hist_deque = new Deque();
 var bullet_hole_x = new Deque();
 var bullet_hole_y = new Deque();
-var sight;
-var time = Date.now();
-var numBulletHoles = 0;
+var bulletTime = Date.now();
+var enemyTime = Date.now();
 
 Leap.loop(function(frame) {
     var hands = frame.hands;
@@ -47,23 +48,36 @@ Leap.loop(function(frame) {
         bullet_hole_y.push(sight.getY());
 
         var newTime = Date.now();
-        if (newTime - time > 1000 && max_vel <= 15 && abs_avg_vel > 5000 && avg_vel > 0) {
-            time = newTime;
+        if (newTime - bulletTime > 1000 && max_vel <= 15 && abs_avg_vel > 5000 && avg_vel > 0) {
+            bulletTime = newTime;
 
             var img = document.createElement('img');
             img.src = 'img/bullet_hole.png';
             img.style.position = 'absolute';
-            img.style.left = bullet_hole_x.get(0);
-            img.style.top = bullet_hole_y.get(0);
-
-            console.log(bullet_hole_x.get(0) + " " + bullet_hole_y.get(0));
+            img.style.left = bullet_hole_x.get(0) + "px";
+            img.style.top = bullet_hole_y.get(0) + "px";
 
             img.onload = function() {
                 document.body.appendChild(img);
             }
 
+            for (var i = 0; i < enemies.length; i++) {
+                if (bullet_hole_x.get(0) >= enemies[i].getX() && bullet_hole_x.get(0) <= enemies[i].getX() + enemies[i].getWidth() && bullet_hole_y.get(0) >= enemies[i].getY() && bullet_hole_y.get(0) <= enemies[i].getY() + enemies[i].getHeight()) {
+                    document.body.removeChild(enemies[i].getImg());
+                    enemies.splice(i, 1);
+                    break;
+                }
+            }
+
             console.log("Fired!");
         }
+    }
+
+    // Add enemies
+    var newTime = Date.now();
+    if (newTime - enemyTime > 5000) {
+        enemyTime = newTime;
+        enemies.push(new Enemy());
     }
 }).use('screenPosition', {
     scale: 0.5
@@ -71,9 +85,13 @@ Leap.loop(function(frame) {
 
 var Sight = function() {
     var sight = this;
+    var x;
+    var y;
+
     var img = document.createElement('img');
     img.src = 'img/gun_sight.png';
     img.style.position = 'absolute';
+    img.style.zIndex = "100";
 
     img.onload = function() {
         sight.setTransform([window.innerWidth / 2, window.innerHeight / 2], 0);
@@ -81,21 +99,63 @@ var Sight = function() {
     }
 
     sight.setTransform = function(position, direction) {
-        var newX = position[0] - img.width / 2 + (direction[0] * 1000) + 'px';
-        var newY = position[1] - img.height / 2 + (-direction[1] * 1000) + 'px';
+        x = position[0] - img.width / 2 + (direction[0] * 1000);
+        y = position[1] - img.height / 2 + (-direction[1] * 1000);
 
-        img.style.left = newX;
-        img.style.top = newY;
+        img.style.left = x + "px";
+        img.style.top = y + "px";
     };
 
     sight.getX = function() {
-        return img.style.left;
+        return x;
     }
 
     sight.getY = function() {
-        return img.style.top;
+        return y;
     }
 };
+
+var Enemy = function() {
+    var enemy = this;
+
+    var img = document.createElement('img');
+    img.src = 'img/zombie.png';
+    img.style.position = 'absolute';
+
+    var x = (window.innerWidth - img.width) * Math.random();
+    var y = (window.innerHeight - img.height) * Math.random();
+    var width;
+    var height;
+
+    img.style.left = x + "px";
+    img.style.top = y + "px";
+
+    img.onload = function() {
+        document.body.appendChild(img);
+        width = img.width;
+        height = img.height;
+    }
+
+    enemy.getImg = function() {
+        return img;
+    }
+
+    enemy.getWidth = function() {
+        return width;
+    }
+
+    enemy.getHeight = function() {
+        return height;
+    }
+
+    enemy.getX = function() {
+        return x;
+    }
+
+    enemy.getY = function() {
+        return y;
+    }
+}
 
 function average(arr) {
     var avg = 0;
